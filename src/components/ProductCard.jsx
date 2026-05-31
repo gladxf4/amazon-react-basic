@@ -5,7 +5,7 @@ function ProductCard({ id, title, image, price, mrp, discount, rating, reviewCou
   const formattedMRP = mrp ? new Intl.NumberFormat('en-IN').format(mrp) : null;
 
   return (
-    <div className="flex flex-col bg-white z-10 p-5 m-2.5 w-full max-w-sm rounded-sm hover:shadow-lg transition-shadow duration-300">
+    <div className="flex flex-col bg-white z-10 p-3 sm:p-5 m-1 sm:m-2.5 w-full max-w-sm rounded-sm hover:shadow-lg transition-shadow duration-300">
       {/* Image at the top like Amazon India often does, or title first. Amazon usually does image first. Let's do image first. */}
       <div className="h-[200px] w-full flex items-center justify-center mb-4 cursor-pointer">
         <img src={image} alt={title} className="max-h-[200px] max-w-full object-contain" />

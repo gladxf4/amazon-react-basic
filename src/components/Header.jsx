@@ -4,7 +4,7 @@ function Header() {
   return (
     <header className="flex flex-col">
       {/* Top Nav */}
-      <div className="bg-[#131921] text-white flex items-center p-2 text-sm">
+      <div className="bg-[#131921] text-white flex flex-wrap items-center p-2 text-sm">
         
         {/* Logo */}
         <div className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mt-1">
@@ -25,8 +25,8 @@ function Header() {
         </div>
 
         {/* Search */}
-        <div className="flex flex-1 items-center h-10 rounded-md overflow-hidden bg-white mx-4 hover:ring-2 hover:ring-[#f3a847]">
-          <select className="bg-gray-100 text-gray-700 text-xs h-full px-2 border-r border-gray-300 outline-none w-auto max-w-[50px] md:max-w-none cursor-pointer">
+        <div className="flex flex-1 items-center h-10 rounded-md overflow-hidden bg-white mx-2 sm:mx-4 hover:ring-2 hover:ring-[#f3a847] w-full mt-2 sm:mt-0 order-last sm:order-none min-w-[200px]">
+          <select className="bg-gray-100 text-gray-700 text-xs h-full px-2 border-r border-gray-300 outline-none w-auto max-w-[50px] md:max-w-none cursor-pointer hidden sm:block">
             <option>All</option>
           </select>
           <input className="h-full p-2 flex-1 border-none outline-none text-black" type="text" placeholder="Search Amazon.in" />
@@ -38,7 +38,7 @@ function Header() {
         </div>
 
         {/* Right Navigation */}
-        <div className="flex items-center justify-evenly">
+        <div className="flex items-center justify-evenly ml-auto sm:ml-0">
           
           <div className="flex flex-col border border-transparent hover:border-white p-2 rounded cursor-pointer mx-1 hidden sm:flex">
             <span className="text-xs">Hello, Akshat</span>
