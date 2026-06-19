@@ -1,13 +1,24 @@
-import React from 'react';
 
-function Header() {
+function Header({
+  cartCount,
+  searchQuery,
+  setSearchQuery,
+  selectedCategory,
+  setSelectedCategory,
+  categories = ['All'],
+  onLogoClick,
+  onCartClick,
+}) {
   return (
-    <header className="flex flex-col">
+    <header className="flex flex-col sticky top-0 z-40 shadow-md">
       {/* Top Nav */}
       <div className="bg-[#131921] text-white flex flex-wrap items-center p-2 text-sm">
         
         {/* Logo */}
-        <div className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mt-1">
+        <div 
+          onClick={onLogoClick}
+          className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mt-1"
+        >
           <img 
             className="w-20 object-contain invert"
             src="/static/img/amazon_logo.svg" 
@@ -25,17 +36,39 @@ function Header() {
         </div>
 
         {/* Search */}
-        <div className="flex flex-1 items-center h-10 rounded-md overflow-hidden bg-white mx-2 sm:mx-4 hover:ring-2 hover:ring-[#f3a847] w-full mt-2 sm:mt-0 order-last sm:order-none min-w-[200px]">
-          <select className="bg-gray-100 text-gray-700 text-xs h-full px-2 border-r border-gray-300 outline-none w-auto max-w-[50px] md:max-w-none cursor-pointer hidden sm:block">
-            <option>All</option>
+        <form 
+          onSubmit={(e) => e.preventDefault()}
+          className="flex flex-1 items-center h-10 rounded-md overflow-hidden bg-white mx-2 sm:mx-4 hover:ring-2 hover:ring-[#f3a847] w-full mt-2 sm:mt-0 order-last sm:order-none min-w-[200px]"
+        >
+          <select 
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="bg-gray-100 text-gray-700 text-xs h-full px-3 border-r border-gray-300 outline-none w-auto max-w-[80px] md:max-w-none cursor-pointer hidden sm:block font-sans hover:bg-gray-200 transition-colors"
+          >
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat === 'All' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </option>
+            ))}
           </select>
-          <input className="h-full p-2 flex-1 border-none outline-none text-black" type="text" placeholder="Search Amazon.in" />
-          <button className="h-full px-4 bg-[#febd69] hover:bg-[#f3a847] cursor-pointer text-black">
+          
+          <input 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-full p-2 flex-1 border-none outline-none text-black text-sm" 
+            type="text" 
+            placeholder="Search Amazon.in" 
+          />
+          
+          <button 
+            type="submit"
+            className="h-full px-5 bg-[#febd69] hover:bg-[#f3a847] cursor-pointer text-black transition-colors"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
-        </div>
+        </form>
 
         {/* Right Navigation */}
         <div className="flex items-center justify-evenly ml-auto sm:ml-0">
@@ -50,12 +83,20 @@ function Header() {
             <span className="font-bold text-sm leading-3">& Orders</span>
           </div>
 
-          <div className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mx-1 relative">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <span className="absolute top-0 right-1/2 translate-x-1/2 text-[#f3a847] font-bold">0</span>
-            <span className="font-bold hidden sm:block mt-3 ml-1">Cart</span>
+          {/* Cart Section */}
+          <div 
+            onClick={onCartClick}
+            className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mx-1 relative select-none"
+          >
+            <div className="relative">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span className="absolute -top-1.5 left-[13px] bg-[#131921] text-[#f3a847] font-bold text-base px-1.5 rounded-full min-w-[20px] text-center">
+                {cartCount}
+              </span>
+            </div>
+            <span className="font-bold hidden sm:block mt-3 ml-2">Cart</span>
           </div>
 
         </div>
