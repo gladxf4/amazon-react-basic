@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import Home from './components/Home';
-import Cart from './components/Cart';
 import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+import CartPage from './pages/CartPage';
+import ProductDetailsPage from './pages/ProductDetailsPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -11,14 +14,20 @@ function App() {
     const savedCart = localStorage.getItem('amazon_cart');
     return savedCart ? JSON.parse(savedCart) : [];
   });
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('amazon_isLoggedIn') === 'true';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [currentView, setCurrentView] = useState('home');
   const [toast, setToast] = useState({ show: false, productTitle: '', productImage: '' });
 
   useEffect(() => {
     localStorage.setItem('amazon_cart', JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem('amazon_isLoggedIn', isLoggedIn);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     fetch('https://fakestoreapi.com/products')
@@ -38,9 +47,51 @@ function App() {
             reviewCount: item.rating.count,
             image: item.image,
             category: item.category,
+            description: item.description,
           };
         });
-        setProducts(formattedData);
+
+        // Fixed mock products with relevant images
+        const localMockProducts = [
+          {
+            id: 10001,
+            title: "Apple iPhone 15 Pro (128 GB) - Blue Titanium",
+            price: 129900,
+            mrp: 134900,
+            discount: 4,
+            rating: 4.6,
+            reviewCount: 1845,
+            image: "https://m.media-amazon.com/images/I/81fxjeu8fdL._SX679_.jpg", // Actual iPhone 15 Pro image
+            category: "electronics",
+            description: "Forged in titanium and featuring the groundbreaking A17 Pro chip, a customizable Action button, and a more versatile Pro camera system.",
+          },
+          {
+            id: 10002,
+            title: "Sony WH-1000XM5 Wireless Noise Cancelling Headphones - Active Black",
+            price: 29990,
+            mrp: 34990,
+            discount: 14,
+            rating: 4.5,
+            reviewCount: 3820,
+            image: "https://m.media-amazon.com/images/I/51aXvjzcukL._SX522_.jpg", // Actual Sony WH-1000XM5 image
+            category: "electronics",
+            description: "Industry-leading noise cancellation. Two processors control 8 microphones for unprecedented noise cancellation.",
+          },
+          {
+            id: 10003,
+            title: "Mens Casual Premium Slim Fit Cotton T-Shirt - Crimson Red",
+            price: 799,
+            mrp: 1499,
+            discount: 47,
+            rating: 4.2,
+            reviewCount: 940,
+            image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=400&q=80", // Reliable T-shirt image
+            category: "men's clothing",
+            description: "Slim-fitting style, contrast raglan long sleeve, three-button henley placket, light weight & soft fabric for breathable and comfortable wearing.",
+          }
+        ];
+
+        setProducts([...localMockProducts, ...formattedData]);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -60,18 +111,15 @@ function App() {
 
   const handleSearchChange = (query) => {
     setSearchQuery(query);
-    setCurrentView('home');
   };
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    setCurrentView('home');
   };
 
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('All');
-    setCurrentView('home');
   };
 
   const addToCart = (product) => {
@@ -112,7 +160,6 @@ function App() {
   };
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-
   const categories = ['All', ...new Set(products.map((p) => p.category))];
 
   const filteredProducts = products.filter((product) => {
@@ -133,27 +180,53 @@ function App() {
         setSelectedCategory={handleCategoryChange}
         categories={categories}
         onLogoClick={resetFilters}
-        onCartClick={() => setCurrentView('cart')}
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
       />
 
       <main className="flex-grow">
-        {currentView === 'home' ? (
-          <Home
-            products={filteredProducts}
-            isLoading={isLoading}
-            searchQuery={searchQuery}
-            selectedCategory={selectedCategory}
-            onAddToCart={addToCart}
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <HomePage 
+                products={filteredProducts}
+                isLoading={isLoading}
+                searchQuery={searchQuery}
+                selectedCategory={selectedCategory}
+                onAddToCart={addToCart}
+              />
+            } 
           />
-        ) : (
-          <Cart
-            cartItems={cart}
-            onUpdateQuantity={updateQuantity}
-            onRemoveItem={removeFromCart}
-            onCheckout={clearCart}
-            onBackToShopping={resetFilters}
+          <Route 
+            path="/cart" 
+            element={
+              <CartPage 
+                cartItems={cart}
+                onUpdateQuantity={updateQuantity}
+                onRemoveItem={removeFromCart}
+                onCheckout={clearCart}
+              />
+            } 
           />
-        )}
+          <Route 
+            path="/product/:id" 
+            element={
+              <ProductDetailsPage 
+                products={products}
+                onAddToCart={addToCart}
+              />
+            } 
+          />
+          <Route 
+            path="/login" 
+            element={
+              <LoginPage 
+                setIsLoggedIn={setIsLoggedIn} 
+              />
+            } 
+          />
+        </Routes>
       </main>
 
       <Footer />
@@ -169,28 +242,8 @@ function App() {
           <div className="flex-grow min-w-0">
             <h4 className="text-sm font-bold text-emerald-800">Added to Cart</h4>
             <p className="text-xs text-gray-700 truncate mt-0.5">{toast.productTitle}</p>
-            <button
-              onClick={() => {
-                setCurrentView('cart');
-                setToast({ show: false, productTitle: '', productImage: '' });
-              }}
-              className="mt-2 text-xs font-bold text-[#007185] hover:text-[#c7511f] hover:underline cursor-pointer flex items-center"
-            >
-              Go to Cart
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
           </div>
           <img src={toast.productImage} alt={toast.productTitle} className="w-12 h-12 object-contain bg-white p-1 border border-gray-200 rounded shadow-sm shrink-0" />
-          <button
-            onClick={() => setToast({ show: false, productTitle: '', productImage: '' })}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer shrink-0"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
         </div>
       )}
     </div>

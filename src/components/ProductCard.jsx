@@ -1,21 +1,23 @@
-function ProductCard({ title, image, price, mrp, discount, rating, reviewCount, onAddToCart }) {
+import { Link } from 'react-router-dom';
+
+function ProductCard({ id, title, image, price, mrp, discount, rating, reviewCount, onAddToCart }) {
   const formattedPrice = new Intl.NumberFormat('en-IN').format(price);
   const formattedMRP = mrp ? new Intl.NumberFormat('en-IN').format(mrp) : null;
 
   return (
     <div className="flex flex-col bg-white z-10 p-3 sm:p-5 m-1 sm:m-2.5 w-full max-w-sm rounded-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-gray-200">
       {/* Image at the top */}
-      <div className="h-[200px] w-full flex items-center justify-center mb-4 cursor-pointer overflow-hidden group">
+      <Link to={`/product/${id}`} className="h-[200px] w-full flex items-center justify-center mb-4 cursor-pointer overflow-hidden group">
         <img 
           src={image} 
           alt={title} 
           className="max-h-[200px] max-w-full object-contain transition-transform duration-300 group-hover:scale-105" 
         />
-      </div>
+      </Link>
 
-      <p className="text-base text-gray-800 line-clamp-3 mb-1 cursor-pointer hover:text-[#c7511f] font-medium leading-tight min-h-[4rem]">
+      <Link to={`/product/${id}`} className="text-base text-gray-800 line-clamp-3 mb-1 cursor-pointer hover:text-[#c7511f] font-medium leading-tight min-h-[4rem] hover:underline">
         {title}
-      </p>
+      </Link>
       
       {/* Rating Row */}
       <div className="flex items-center mb-1">
@@ -61,7 +63,7 @@ function ProductCard({ title, image, price, mrp, discount, rating, reviewCount, 
           <span className="text-[#00a8e1] font-bold italic mr-1">prime</span>
         </div>
         <p className="text-xs text-gray-600">
-          FREE Delivery by <strong>Tomorrow, 10 am</strong>
+          FREE Delivery by <strong>{new Date(Date.now() + ((id % 4) + 1) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</strong>
         </p>
       </div>
 

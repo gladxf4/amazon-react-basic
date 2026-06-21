@@ -1,3 +1,5 @@
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, Search, MapPin, ShoppingCart } from 'lucide-react';
 
 function Header({
   cartCount,
@@ -7,114 +9,183 @@ function Header({
   setSelectedCategory,
   categories = ['All'],
   onLogoClick,
-  onCartClick,
+  isLoggedIn,
+  setIsLoggedIn,
 }) {
-  return (
-    <header className="flex flex-col sticky top-0 z-40 shadow-md">
-      {/* Top Nav */}
-      <div className="bg-[#131921] text-white flex flex-wrap items-center p-2 text-sm">
-        
-        {/* Logo */}
-        <div 
-          onClick={onLogoClick}
-          className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mt-1"
-        >
-          <img 
-            className="w-20 object-contain invert"
-            src="/static/img/amazon_logo.svg" 
-            alt="Amazon Logo" 
-          />
-          <span className="text-[#00a8e1] font-bold text-lg leading-3 ml-0.5 mt-[-10px]">prime</span>
-        </div>
+  const navigate = useNavigate();
 
-        {/* Deliver To */}
-        <div className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mx-2 hidden md:flex">
-          <div className="flex flex-col ml-1">
-            <span className="text-xs text-gray-300">Deliver to Akshat</span>
-            <span className="font-bold text-sm leading-3">New Delhi 110001</span>
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setIsLoggedIn(false);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    navigate('/');
+  };
+
+  const handleLogoClick = () => {
+    onLogoClick();
+    navigate('/');
+  };
+
+  return (
+    <header className="flex flex-col sticky top-0 z-40 shadow-sm font-sans min-w-[320px]">
+      {/* Top Nav - Main Belt */}
+      <div className="bg-[#131921] text-white flex items-center px-2 sm:px-4 py-2 text-sm h-[60px]">
+
+        {/* Left Side: Logo & Location */}
+        <div className="flex items-center space-x-1 shrink-0">
+          {/* Logo */}
+          <div
+            onClick={handleLogoClick}
+            className="flex items-start border border-transparent hover:border-white p-1.5 rounded-sm cursor-pointer mt-1"
+          >
+            <img
+              className="w-24 object-contain mt-2 invert"
+              src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
+              alt="Amazon Logo"
+            />
+            <div className="flex flex-col ml-1 hidden sm:flex pt-1">
+              <span className="text-white font-bold text-sm leading-tight">.in</span>
+              <span className="text-[#00a8e1] font-bold text-[15px] leading-tight tracking-tight mt-[-2px]">prime</span>
+            </div>
+          </div>
+
+          {/* Deliver To */}
+          <div className="flex items-center border border-transparent hover:border-white p-1 rounded-sm cursor-pointer hidden md:flex h-[50px] px-2">
+            <MapPin className="w-5 h-5 mt-3 mr-1 text-white" />
+            <div className="flex flex-col leading-tight pt-1">
+              <span className="text-xs text-gray-300">{isLoggedIn ? 'Deliver to Akshat' : 'Deliver to'}</span>
+              <span className="font-bold text-sm text-white">New Delhi 110001</span>
+            </div>
           </div>
         </div>
 
-        {/* Search */}
-        <form 
-          onSubmit={(e) => e.preventDefault()}
-          className="flex flex-1 items-center h-10 rounded-md overflow-hidden bg-white mx-2 sm:mx-4 hover:ring-2 hover:ring-[#f3a847] w-full mt-2 sm:mt-0 order-last sm:order-none min-w-[200px]"
+        {/* Middle: Search Bar */}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="hidden sm:flex flex-1 items-center h-10 rounded-md overflow-hidden bg-white mx-4 focus-within:ring-2 focus-within:ring-[#f3a847] w-full"
         >
-          <select 
+          <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-gray-100 text-gray-700 text-xs h-full px-3 border-r border-gray-300 outline-none w-auto max-w-[80px] md:max-w-none cursor-pointer hidden sm:block font-sans hover:bg-gray-200 transition-colors"
+            className="bg-gray-100 text-gray-600 text-xs h-full px-2 border-r border-gray-300 outline-none hover:bg-gray-200 cursor-pointer w-auto max-w-[120px]"
           >
             {categories.map((cat) => (
               <option key={cat} value={cat}>
-                {cat === 'All' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                {cat === 'All' ? 'All Categories' : cat.charAt(0).toUpperCase() + cat.slice(1)}
               </option>
             ))}
           </select>
-          
-          <input 
+
+          <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-full p-2 flex-1 border-none outline-none text-black text-sm" 
-            type="text" 
-            placeholder="Search Amazon.in" 
+            className="h-full p-2 flex-1 border-none outline-none text-black text-sm"
+            type="text"
+            placeholder="Search Amazon.in"
           />
-          
-          <button 
+
+          <button
             type="submit"
-            className="h-full px-5 bg-[#febd69] hover:bg-[#f3a847] cursor-pointer text-black transition-colors"
+            className="h-full w-12 flex items-center justify-center bg-[#febd69] hover:bg-[#f3a847] cursor-pointer text-gray-800 transition-colors"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <Search className="w-5 h-5" />
           </button>
         </form>
 
         {/* Right Navigation */}
-        <div className="flex items-center justify-evenly ml-auto sm:ml-0">
-          
-          <div className="flex flex-col border border-transparent hover:border-white p-2 rounded cursor-pointer mx-1 hidden sm:flex">
-            <span className="text-xs">Hello, Akshat</span>
-            <span className="font-bold text-sm leading-3">Account & Lists</span>
+        <div className="flex items-center justify-end space-x-1 shrink-0 ml-auto sm:ml-0 h-[50px]">
+
+          {/* Language / Region */}
+          <div className="flex items-end border border-transparent hover:border-white p-2 rounded-sm cursor-pointer hidden lg:flex h-full pb-3">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="IN" className="w-5 h-4 mr-1 object-cover" />
+            <span className="text-sm font-bold leading-none">EN</span>
+            <span className="text-[10px] text-gray-400 ml-1 leading-none">▼</span>
           </div>
 
-          <div className="flex flex-col border border-transparent hover:border-white p-2 rounded cursor-pointer mx-1 hidden sm:flex">
-            <span className="text-xs">Returns</span>
-            <span className="font-bold text-sm leading-3">& Orders</span>
+          {/* Account & Lists */}
+          <div className="flex flex-col justify-center border border-transparent hover:border-white p-2 rounded-sm cursor-pointer hidden md:flex h-full leading-tight group relative">
+            <Link to={isLoggedIn ? "#" : "/login"} className="text-white hover:no-underline">
+              <span className="text-xs whitespace-nowrap block">{isLoggedIn ? "Hello, Akshat" : "Hello, Sign in"}</span>
+              <span className="font-bold text-sm whitespace-nowrap flex items-center">Account & Lists <span className="text-[10px] text-gray-400 ml-1 mt-1">▼</span></span>
+            </Link>
+            
+            {/* Logout Dropdown (visible on hover if logged in) */}
+            {isLoggedIn && (
+              <div className="absolute top-full right-0 mt-0 w-48 bg-white text-black shadow-lg rounded-sm border border-gray-200 hidden group-hover:block z-50 p-3">
+                <button 
+                  onClick={handleLogout}
+                  className="w-full text-left text-sm text-[#007185] hover:text-[#c7511f] hover:underline"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Returns & Orders */}
+          <div className="flex flex-col justify-center border border-transparent hover:border-white p-2 rounded-sm cursor-pointer hidden lg:flex h-full leading-tight">
+            <span className="text-xs text-white">Returns</span>
+            <span className="font-bold text-sm">& Orders</span>
           </div>
 
           {/* Cart Section */}
-          <div 
-            onClick={onCartClick}
-            className="flex items-center border border-transparent hover:border-white p-2 rounded cursor-pointer mx-1 relative select-none"
+          <Link
+            to="/cart"
+            className="flex items-center border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer h-full relative select-none hover:no-underline text-white group"
           >
-            <div className="relative">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span className="absolute -top-1.5 left-[13px] bg-[#131921] text-[#f3a847] font-bold text-base px-1.5 rounded-full min-w-[20px] text-center">
+            <div className="relative flex items-center pt-2 transform transition-transform duration-300 group-hover:scale-110">
+              <span className="absolute top-0 left-4 font-bold text-[#f3a847] w-[20px] text-center leading-none z-10">
                 {cartCount}
               </span>
+              <span className="nav-cart-icon nav-sprite opacity-90 inline-block filter brightness-0 invert"></span>
             </div>
-            <span className="font-bold hidden sm:block mt-3 ml-2">Cart</span>
-          </div>
+            <span className="font-bold hidden sm:block mt-auto text-sm self-end mb-1">Cart</span>
+          </Link>
 
         </div>
       </div>
 
-      {/* Sub Nav */}
-      <div className="bg-[#232f3e] text-white flex items-center p-1 text-sm font-medium">
-        <div className="flex items-center border border-transparent hover:border-white px-2 py-1 rounded cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          All
+      {/* Mobile Search Bar (shows only on small screens) */}
+      <div className="bg-[#131921] p-2 sm:hidden flex w-full border-t border-gray-700">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="flex flex-1 items-center h-10 rounded-md overflow-hidden bg-white w-full focus-within:ring-2 focus-within:ring-[#f3a847]"
+        >
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-full p-2 flex-1 border-none outline-none text-black text-sm w-full"
+            type="text"
+            placeholder="Search Amazon.in"
+          />
+          <button
+            type="submit"
+            className="h-full w-12 flex items-center justify-center bg-[#febd69] hover:bg-[#f3a847] cursor-pointer text-gray-800"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+        </form>
+      </div>
+
+      {/* Sub Nav (Amazon Belt Below Main Header) */}
+      <div className="bg-[#232f3e] text-white flex items-center px-3 py-1 text-sm font-medium overflow-x-auto whitespace-nowrap hide-scrollbar">
+        <div className="flex items-center border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0">
+          <Menu className="w-5 h-5 mr-1" />
+          <span className="font-bold">All</span>
         </div>
-        <p className="border border-transparent hover:border-white px-2 py-1 rounded cursor-pointer mx-1">Today's Deals</p>
-        <p className="border border-transparent hover:border-white px-2 py-1 rounded cursor-pointer mx-1">Customer Service</p>
-        <p className="border border-transparent hover:border-white px-2 py-1 rounded cursor-pointer mx-1 hidden sm:block">Registry</p>
-        <p className="border border-transparent hover:border-white px-2 py-1 rounded cursor-pointer mx-1 hidden sm:block">Gift Cards</p>
-        <p className="border border-transparent hover:border-white px-2 py-1 rounded cursor-pointer mx-1 hidden sm:block">Sell</p>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white">Amazon miniTV</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white">Sell</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white">Best Sellers</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white">Today's Deals</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white">Mobiles</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white">Customer Service</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white hidden md:block">Electronics</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white hidden md:block">Prime</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white hidden lg:block">New Releases</a>
+        <a href="#" className="border border-transparent hover:border-white px-2 py-1 rounded-sm cursor-pointer flex-shrink-0 hover:no-underline text-white hidden lg:block">Amazon Pay</a>
       </div>
     </header>
   );
